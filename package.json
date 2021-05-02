@@ -1,0 +1,17 @@
+{
+  "name": "ammy-dot-dog",
+  "version": "1.0.0",
+  "description": "Website for miscellanous nonsense related to Okami, the video game, with a lean on its speedrunning community.",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc --project tsconfig.json",
+    "start": "npx tsc --project tsconfig.json && node build/index.js"
+  },
+  "author": "Shep",
+  "license": "Unlicense",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "typescript": "^4.2.4"
+  }
+}
