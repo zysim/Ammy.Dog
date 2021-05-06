@@ -1,15 +1,14 @@
 import registerServiceWorker from './registerServiceWorker.js'
+import buildComponents, { $ } from './utils/buildComponents.js'
 
 enum CatEntry {
   NG_Any = '',
   NG_Any1 = 'xk901ggk',
 }
 
-const createComponent = () => {
-  const div = document.createElement('div')
-  div.textContent = 'test'
-  return div
-}
+const e = buildComponents('span.test{wow}.another#id')
+
+console.log(e)
 
 const getRunsForCat = async (cat: CatEntry) =>
   fetch(
@@ -26,10 +25,8 @@ const main = async () => {
 
   document.querySelector('#loader-container')?.remove()
 
-  document.querySelector('#root')?.append(createComponent())
-
   console.log(await res.json())
 }
 
-registerServiceWorker()
-main()
+// registerServiceWorker()
+// main()
