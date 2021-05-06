@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import fs from 'fs'
 import https from 'https'
 import path from 'path'
@@ -10,10 +10,11 @@ const credentials = {
 }
 const app = express()
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'), (err: Error) => {
-    console.error(err)
-  })
+// This is triggered for all paths
+app.use(express.static(path.join(__dirname, '../public')))
+
+app.get('/', (_: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'))
 })
 
 https.createServer(credentials, app).listen(port)

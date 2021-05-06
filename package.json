@@ -5,8 +5,9 @@
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ". ./build.sh",
-    "start": ". ./start.sh"
+    "clean": "rm -rf build && rm -rf public/*.{js,js.map}",
+    "build": "clear && bash ./build.sh",
+    "start": "clear && bash ./start.sh"
   },
   "author": "Shep",
   "license": "Unlicense",

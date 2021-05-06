@@ -1,6 +1,14 @@
+import registerServiceWorker from './registerServiceWorker.js'
+
 enum CatEntry {
   NG_Any = '',
   NG_Any1 = 'xk901ggk',
+}
+
+const createComponent = () => {
+  const div = document.createElement('div')
+  div.textContent = 'test'
+  return div
 }
 
 const getRunsForCat = async (cat: CatEntry) =>
@@ -16,9 +24,12 @@ const getRunsForCat = async (cat: CatEntry) =>
 const main = async () => {
   const res = await getRunsForCat(CatEntry.NG_Any1)
 
+  document.querySelector('#loader-container')?.remove()
+
+  document.querySelector('#root')?.append(createComponent())
+
   console.log(await res.json())
 }
 
-const onLoad = () => {
-  main()
-}
+registerServiceWorker()
+main()
