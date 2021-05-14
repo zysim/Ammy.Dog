@@ -65,7 +65,7 @@ export const buildElements = (tokens: string[]) => {
 
 export const buildElement = (tokens: string[]) => {
   const r = tokens.reduce(
-    (acc, token, i) => {
+    (acc: { element: MineElement; flag: Flags | null }, token, i) => {
       switch (token) {
         case '.':
           acc.flag = Flags.Class
@@ -121,18 +121,14 @@ export const buildElement = (tokens: string[]) => {
 export const $ = (selector: string) =>
   document.querySelector(selector) as Element
 
-export const createElement = (
-  tag: keyof HTMLElementTagNameMap,
-  options?: Obj,
-) => {
-  const el = document.createElement(tag)
-  if (options) {
-    options.classList && el.classList.add(...options?.classList.split(' '))
-    el.textContent = options?.textContent || null
-    options.eventListener &&
-      el.addEventListener(options?.eventListener[0], options?.eventListener[1])
-  }
+export const createElement = (element: MineElement) => {
+  const el = document.createElement(element.tag)
+  element.classList && el.classList.add(...element.classList)
+  el.textContent = element.textContent
+  el.id = element.id
+  // options.eventListener &&
+  //   el.addEventListener(options?.eventListener[0], options?.eventListener[1])
   return el
 }
 
-export default compose(splitEmmet, buildElement)
+export default compose(splitEmmet, buildElement, createElement)

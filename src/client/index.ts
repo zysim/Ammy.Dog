@@ -8,7 +8,7 @@ enum CatEntry {
 
 const e = buildComponents('span.test{wow}.another#id')
 
-console.log(e)
+document.body.appendChild(e)
 
 const getRunsForCat = async (cat: CatEntry) =>
   fetch(
