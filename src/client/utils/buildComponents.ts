@@ -1,11 +1,4 @@
-import { compose } from './fp.js'
-
-interface Obj {
-  id?: string
-  classList?: string
-  textContent?: string
-  eventListener?: [string, EventListenerOrEventListenerObject]
-}
+import { compose } from './fp'
 
 const splitEmmet = (emmet: string) =>
   emmet.split('').reduce((acc: string[], l: string) => {
@@ -19,12 +12,12 @@ const splitEmmet = (emmet: string) =>
     return acc
   }, [])
 
-type MineElement = {
+interface MineElement {
   children: HTMLElement[]
-  classList: string[]
-  id: string
+  classList: string[] | null
+  id: string | null
   tag: keyof HTMLElementTagNameMap
-  textContent: string
+  textContent: string | null
 }
 
 enum Flags {
@@ -40,10 +33,10 @@ enum Flags {
 
 const createDefaultElement = (): MineElement => ({
   children: [],
-  classList: [],
-  id: '',
+  classList: null,
+  id: null,
   tag: 'div',
-  textContent: '',
+  textContent: null,
 })
 
 /**
@@ -89,7 +82,7 @@ export const buildElement = (tokens: string[]) => {
         default:
           switch (acc.flag) {
             case Flags.Class:
-              acc.element.classList.push(token)
+              acc.element.classList?.push(token)
               acc.flag = null
               break
             case Flags.Id:
@@ -125,7 +118,7 @@ export const createElement = (element: MineElement) => {
   const el = document.createElement(element.tag)
   element.classList && el.classList.add(...element.classList)
   el.textContent = element.textContent
-  el.id = element.id
+  element.id && (el.id = element.id)
   // options.eventListener &&
   //   el.addEventListener(options?.eventListener[0], options?.eventListener[1])
   return el

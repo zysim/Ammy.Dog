@@ -1,13 +1,14 @@
 {
   "name": "ammy-dot-dog",
   "version": "1.0.0",
-  "description": "Website for miscellanous nonsense related to Okami, the video game, with a lean on its speedrunning community.",
-  "main": "build/index.js",
+  "description": "Website for miscellanous nonsense related to Okami, the video game, with a lean towards its speedrunning community.",
+  "private": "true",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf build && rm -rf public/*.{js,js.map}",
-    "build": "clear && bash ./build.sh",
-    "start": "clear && bash ./start.sh"
+    "build:client": "webpack -c webpack.config.js --watch",
+    "build:server": "clear && tsc --project tsconfig.server.json",
+    "start": "npm run build:client & node build/server.js"
   },
   "author": "Shep",
   "license": "Unlicense",
@@ -15,9 +16,15 @@
     "@tsconfig/recommended": "^1.0.1",
     "@types/express": "^4.17.11",
     "@types/node": "^15.0.1",
-    "typescript": "^4.2.4"
+    "css-loader": "^5.2.4",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^9.1.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0"
   },
   "dependencies": {
+    "emmet": "^2.3.4",
     "express": "^4.17.1"
   }
 }

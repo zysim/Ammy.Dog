@@ -17,4 +17,6 @@ app.get('/', (_: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'))
 })
 
-https.createServer(credentials, app).listen(port)
+https.createServer(credentials, app).listen(port, () => {
+  console.log('Listening at :' + port)
+})

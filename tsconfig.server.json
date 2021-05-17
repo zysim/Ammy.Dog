@@ -3,7 +3,7 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ESNext",
-        "outDir": "build/server",
+        "outDir": "build",
         "strict": true,
         "noImplicitAny": true,
         "sourceMap": true

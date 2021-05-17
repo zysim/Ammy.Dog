@@ -4,13 +4,12 @@
         "module": "ESNext",
         "target": "ESNext",
         "moduleResolution": "Node",
-        "outDir": "build/client",
         "strict": true,
         "noImplicitAny": true,
         "sourceMap": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
     ],
     "include": [
         "src/client/**/*.ts"

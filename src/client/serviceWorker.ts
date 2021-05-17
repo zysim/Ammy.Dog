@@ -7,5 +7,5 @@ self.addEventListener('activate', event => {
 })
 
 self.addEventListener('fetch', event => {
-  console.log('Fetch', event)
+  console.log('Fetch', { event })
 })
