@@ -16,7 +16,6 @@ interface RunResponse {
 class MyComponent extends HTMLElement {
   _container: HTMLDivElement
   _title: HTMLSpanElement
-  _subtitle: HTMLSpanElement
   _display: IDisplay
   _button: HTMLButtonElement
   _catSelector: ICatSelector
@@ -28,19 +27,22 @@ class MyComponent extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' })
 
     this._container = document.createElement('div')
-    this._title = document.createElement('span')
-    this._subtitle = document.createElement('span')
+    this._title = this._container.appendChild(document.createElement('span'))
     this._display = Display.init(this._container)
-    this._button = document.createElement('button')
+    this._button = this._container.appendChild(document.createElement('button'))
     this._catSelector = CatSelector.init(this._container, {
       onChange: (value: keyof typeof CatEntry) => {
-        this._cat = CatEntry[value]
+        if (this._cat !== value) {
+          this.refresh()
+          this._cat = value
+        }
       },
     })
-    this._cat = CatEntry.NG_Any1
+    this._cat = CatEntry['NG+ Any%']
 
     this._container.className = 'container'
-    this._title.textContent = 'You have to show video proof if'
+    this._title.textContent =
+      'You have to show video proof if your run is quicker than or exactly at'
     this._button.textContent = 'Refresh'
     this._button.addEventListener('click', this.refresh)
 
@@ -53,21 +55,18 @@ class MyComponent extends HTMLElement {
     `
 
     shadow.append(style, this._container)
-
-    this._container.append(this._title, this._button)
   }
 
   refresh = async () => {
-    this._subtitle.textContent = 'Refreshing'
+    this._display.message = 'refresh'
     const res = await this.getRunsForCat(this._cat)
 
     if (!res.ok) {
-      this._subtitle.textContent = 'Failed! Please Retry.'
+      this._display.message = 'Failed! Please Retry.'
       return
     }
 
     try {
-      this._subtitle.textContent = null
       this._display.time = (await res.json()).data.runs[0].run.times.ingame_t
     } catch (e) {
       console.log({ e })

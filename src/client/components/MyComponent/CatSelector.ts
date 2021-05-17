@@ -1,12 +1,12 @@
 import { Component } from '../../interfaces'
 
 export enum CatEntry {
-  NG_Any = 'zdnwp4xd',
-  NG_Any1 = 'xk901ggk',
-  NG_All_Brushes = 'q25owqgk',
-  NG_All_Brushes1 = 'z27gy6o2',
-  Top_Dog = 'mkeozqxd',
-  All_Major_Bosses = '9d831962',
+  'NG Any%' = 'zdnwp4xd',
+  'NG+ Any%' = 'xk901ggk',
+  'NG All Brushes' = 'q25owqgk',
+  'NG+ All Brushes1' = 'z27gy6o2',
+  'Top Dog' = 'mkeozqxd',
+  'All Major Bosses' = '9d831962',
 }
 
 export interface ICatSelector
@@ -20,7 +20,10 @@ const CatSelector: ICatSelector = {
     r.el = parent.appendChild(document.createElement('select'))
 
     Object.entries(CatEntry).forEach((entry: [string, CatEntry]) => {
-      const opt = r.el.appendChild(document.createElement('option'))
+      const opt: HTMLOptionElement = r.el.appendChild(
+        document.createElement('option'),
+      )
+      if (entry[0] === 'NG+ Any%') opt.selected = true
       opt.textContent = entry[0]
       opt.value = entry[1]
     })
