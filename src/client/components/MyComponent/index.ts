@@ -19,7 +19,7 @@ class MyComponent extends HTMLElement {
   _display: IDisplay
   _button: HTMLButtonElement
   _catSelector: ICatSelector
-  _cat: string
+  _selectedCat: CatEntry
 
   constructor() {
     super()
@@ -28,23 +28,18 @@ class MyComponent extends HTMLElement {
 
     this._container = document.createElement('div')
     this._title = this._container.appendChild(document.createElement('span'))
-    this._display = Display.init(this._container)
+    this._display = Display(this._container)
     this._button = this._container.appendChild(document.createElement('button'))
-    this._catSelector = CatSelector.init(this._container, {
-      onChange: (value: keyof typeof CatEntry) => {
-        if (this._cat !== value) {
-          this.refresh()
-          this._cat = value
-        }
-      },
+    this._catSelector = CatSelector(this._container, (value: CatEntry) => {
+      this._selectedCat !== value && this.refresh(value)
+      this._selectedCat = value
     })
-    this._cat = CatEntry['NG+ Any%']
 
     this._container.className = 'container'
     this._title.textContent =
       'You have to show video proof if your run is quicker than or exactly at'
     this._button.textContent = 'Refresh'
-    this._button.addEventListener('click', this.refresh)
+    this._button.addEventListener('click', () => this.refresh())
 
     const style = document.createElement('style')
     style.textContent = `
@@ -57,9 +52,9 @@ class MyComponent extends HTMLElement {
     shadow.append(style, this._container)
   }
 
-  refresh = async () => {
-    this._display.message = 'refresh'
-    const res = await this.getRunsForCat(this._cat)
+  refresh = async (value: CatEntry = this._catSelector.current) => {
+    this._display.message = 'Getting times...'
+    const res = await this.getRunsForCat(value)
 
     if (!res.ok) {
       this._display.message = 'Failed! Please Retry.'
@@ -73,7 +68,7 @@ class MyComponent extends HTMLElement {
     }
   }
 
-  getRunsForCat = async (cat: string) =>
+  getRunsForCat = async (cat: CatEntry) =>
     fetch(
       `https://www.speedrun.com/api/v1/leaderboards/w6j7546j/category/${cat}?var-68k4dyzl=4qy3r57l&top=1`,
       {

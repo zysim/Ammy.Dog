@@ -1,5 +1,3 @@
-import { Component } from '../../interfaces'
-
 export enum CatEntry {
   'NG Any%' = 'zdnwp4xd',
   'NG+ Any%' = 'xk901ggk',
@@ -9,33 +7,33 @@ export enum CatEntry {
   'All Major Bosses' = '9d831962',
 }
 
-export interface ICatSelector
-  extends Component<{ onChange: (value: keyof typeof CatEntry) => void }> {
-  el: HTMLSelectElement | null
+const DEFAULT_ENTRY: CatEntry = CatEntry['NG+ Any%']
+
+type OnChange = (value: CatEntry) => void
+
+export interface ICatSelector {
+  el: HTMLSelectElement
+  current: CatEntry
 }
 
-const CatSelector: ICatSelector = {
-  init(parent, opts) {
-    const r = Object.create(this)
-    r.el = parent.appendChild(document.createElement('select'))
+export default (parent: HTMLElement, onChange: OnChange): ICatSelector => {
+  const el = parent.appendChild(document.createElement('select'))
 
-    Object.entries(CatEntry).forEach((entry: [string, CatEntry]) => {
-      const opt: HTMLOptionElement = r.el.appendChild(
-        document.createElement('option'),
-      )
-      if (entry[0] === 'NG+ Any%') opt.selected = true
-      opt.textContent = entry[0]
-      opt.value = entry[1]
-    })
+  Object.entries(CatEntry).forEach((entry: [string, CatEntry]) => {
+    const opt: HTMLOptionElement = el.appendChild(
+      document.createElement('option'),
+    )
+    if (entry[1] === DEFAULT_ENTRY) opt.selected = true
+    opt.textContent = entry[0]
+    opt.value = entry[1]
+  })
 
-    r.el.addEventListener('change', () => {
-      opts && opts.onChange(r.el.value)
-    })
+  el.addEventListener('change', () => {
+    onChange(el.value as CatEntry)
+  })
 
-    return r
-  },
-
-  el: null,
+  return {
+    el,
+    current: el.value as CatEntry,
+  }
 }
-
-export default CatSelector
