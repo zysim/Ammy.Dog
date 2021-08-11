@@ -18,7 +18,7 @@ module.exports = {
         include: [path.resolve(__dirname, 'src/client')],
         loader: 'ts-loader',
         options: {
-          configFile: 'tsconfig.client.json',
+          configFile: 'tsconfig.json',
         },
       },
       {
