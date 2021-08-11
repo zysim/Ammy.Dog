@@ -9,7 +9,7 @@ export enum CatEntry {
 
 const DEFAULT_ENTRY: CatEntry = CatEntry['NG+ Any%']
 
-type OnChange = (value: CatEntry) => void
+export type OnChange = (value: CatEntry) => void
 
 export interface ICatSelector {
   el: HTMLSelectElement
@@ -17,14 +17,16 @@ export interface ICatSelector {
 }
 
 export default (parent: HTMLElement, onChange: OnChange): ICatSelector => {
-  const el = parent.appendChild(document.createElement('select'))
-  el.id = 'cat-select'
+  const container = parent.appendChild(document.createElement('div'))
+  container.id = 'cat-select'
+  const el = container.appendChild(document.createElement('select'))
 
   Object.entries(CatEntry).forEach((entry: [string, CatEntry]) => {
     const opt: HTMLOptionElement = el.appendChild(
       document.createElement('option'),
     )
     if (entry[1] === DEFAULT_ENTRY) opt.selected = true
+    opt.className = 'cat-option'
     opt.textContent = entry[0]
     opt.value = entry[1]
   })

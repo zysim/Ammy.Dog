@@ -1,4 +1,7 @@
-import CatSelector, { CatEntry, ICatSelector } from './CatSelector'
+import { CatEntry } from './CatSelector'
+import CatSelectorContainer, {
+  ICatSelectorContainer,
+} from './CatSelectorContainer'
 import Display, { IDisplay } from './Display'
 
 interface RunResponse {
@@ -14,17 +17,29 @@ interface RunResponse {
 }
 
 const STYLE = `
-.container {
-    display: grid;
-    grid-template-columns: 1fr;
+#container {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 48px;
+    background-color: hsla(0, 0%, 100%, 97%);
 }
 
-.container * {
+button, select {
   font-size: 24px;
   font-family: "astralsOkami", serif;
 }
 
-#cat-select > option {
+#cat-selector-container {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+#cat-select {
+  padding: 0rem .5rem;
+}
+
+.cat-option {
   font-family: "astralsOkami", serif;
   font-size: 16px;
 }
@@ -40,6 +55,10 @@ const STYLE = `
 }
 
 @media (min-width: 640px) {
+  #cat-selector-container {
+    flex-flow: row nowrap;
+  }
+
   #display {
     font-size: 6rem;
     height: 6rem;
@@ -49,11 +68,10 @@ const STYLE = `
 
 class MyComponent extends HTMLElement {
   _container: HTMLDivElement
-  _title: HTMLSpanElement
+  _catSelectorContainer: ICatSelectorContainer
   _display: IDisplay
   _button: HTMLButtonElement
-  _catSelector: ICatSelector
-  _selectedCat!: CatEntry
+  _selectedCat = CatEntry['NG+ Any%']
 
   constructor() {
     super()
@@ -61,19 +79,18 @@ class MyComponent extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' })
 
     this._container = document.createElement('div')
-    this._title = this._container.appendChild(document.createElement('span'))
+    this._catSelectorContainer = CatSelectorContainer(
+      this._container,
+      (value: CatEntry) => {
+        this._selectedCat !== value && this.refresh(value)
+        this._selectedCat = value
+      },
+    )
     this._display = Display(this._container)
     this._button = this._container.appendChild(document.createElement('button'))
-    this._catSelector = CatSelector(this._container, (value: CatEntry) => {
-      this._selectedCat !== value && this.refresh(value)
-      this._selectedCat = value
-    })
 
-    this._container.className = 'container'
-    this._title.id = 'title'
-    this._title.textContent =
-      'You have to show video proof if your run is quicker than or exactly at'
-    this._button.textContent = 'Refresh'
+    this._container.id = 'container'
+    this._button.textContent = 'Get/Refresh'
     this._button.addEventListener('click', () => this.refresh())
 
     const style = document.createElement('style')
@@ -82,7 +99,7 @@ class MyComponent extends HTMLElement {
     shadow.append(style, this._container)
   }
 
-  refresh = async (value: CatEntry = this._catSelector.current) => {
+  refresh = async (value: CatEntry = this._selectedCat) => {
     this._display.message = 'Getting times...'
     const res = await this.getRunsForCat(value)
 

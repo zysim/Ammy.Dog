@@ -4,7 +4,10 @@ import MyComponent from './components/MyComponent/'
 
 MyComponent()
 
-$('#root').appendChild(document.createElement('my-component'))
+$('main').appendChild(document.createElement('my-component'))
+$('#stop-animation').addEventListener('click', _ => {
+  $('body').classList.toggle('no-anim')
+})
 
 const main = async () => {
   document.querySelector('#loader-container')?.remove()
