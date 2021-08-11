@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "astralsOkami";
+    src: url(assets/Astralsokami-Regular.otf);
+}
+
+:root {
+    font-family: "astralsOkami", serif;
+    font-size: 24px;
+}

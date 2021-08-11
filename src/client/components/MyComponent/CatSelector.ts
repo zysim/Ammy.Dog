@@ -18,6 +18,7 @@ export interface ICatSelector {
 
 export default (parent: HTMLElement, onChange: OnChange): ICatSelector => {
   const el = parent.appendChild(document.createElement('select'))
+  el.id = 'cat-select'
 
   Object.entries(CatEntry).forEach((entry: [string, CatEntry]) => {
     const opt: HTMLOptionElement = el.appendChild(

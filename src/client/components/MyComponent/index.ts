@@ -18,14 +18,31 @@ const STYLE = `
     display: grid;
     grid-template-columns: 1fr;
 }
-.display {
+
+.container * {
+  font-size: 24px;
+  font-family: "astralsOkami", serif;
+}
+
+#cat-select > option {
+  font-family: "astralsOkami", serif;
+  font-size: 16px;
+}
+
+#display {
   text-align: center;
   font-size: 2.5rem;
+  height: 2.5rem;
+}
+
+#title {
+  text-align: center;
 }
 
 @media (min-width: 640px) {
-  .display {
+  #display {
     font-size: 6rem;
+    height: 6rem;
   }
 }
 `
@@ -53,6 +70,7 @@ class MyComponent extends HTMLElement {
     })
 
     this._container.className = 'container'
+    this._title.id = 'title'
     this._title.textContent =
       'You have to show video proof if your run is quicker than or exactly at'
     this._button.textContent = 'Refresh'
