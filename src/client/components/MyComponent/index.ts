@@ -13,13 +13,30 @@ interface RunResponse {
   }
 }
 
+const STYLE = `
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+.display {
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .display {
+    font-size: 6rem;
+  }
+}
+`
+
 class MyComponent extends HTMLElement {
   _container: HTMLDivElement
   _title: HTMLSpanElement
   _display: IDisplay
   _button: HTMLButtonElement
   _catSelector: ICatSelector
-  _selectedCat: CatEntry
+  _selectedCat!: CatEntry
 
   constructor() {
     super()
@@ -42,12 +59,7 @@ class MyComponent extends HTMLElement {
     this._button.addEventListener('click', () => this.refresh())
 
     const style = document.createElement('style')
-    style.textContent = `
-      .container {
-          display: grid;
-          grid-template-columns: 1fr;
-      }
-    `
+    style.textContent = STYLE
 
     shadow.append(style, this._container)
   }
