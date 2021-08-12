@@ -1,3 +1,4 @@
+import debounce from '../../utils/debounce'
 import { CatEntry } from './CatSelector'
 import CatSelectorContainer, {
   ICatSelectorContainer,
@@ -66,20 +67,6 @@ button, select {
   }
 }
 `
-
-const debounce = (fn: Function, delay = 1000) => {
-  let busy = false
-  return () => {
-    if (!busy) {
-      busy = true
-      fn()
-      setTimeout(() => {
-        busy = false
-      }, delay)
-      return
-    }
-  }
-}
 
 class MyComponent extends HTMLElement {
   _container: HTMLDivElement
