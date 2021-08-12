@@ -15,7 +15,8 @@ body {
 }
 
 body.no-anim {
-    background-image: url(./assets/ammy-static.png);
+    background-image: url(./assets/bead.png);
+    /* background-image: url(./assets/ammy-static.png); */
 }
 
 #stop-animation {

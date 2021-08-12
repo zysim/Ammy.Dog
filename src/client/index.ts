@@ -2,7 +2,14 @@
 import { $ } from './utils/buildComponents'
 import MyComponent from './components/MyComponent/'
 
+const backgroundImages = ['ammy-static', 'bead']
+
 MyComponent()
+
+// @ts-ignore
+$('body').style.backgroundImage = `url(assets/${
+  backgroundImages[~~(Math.random() * backgroundImages.length)]
+}.png)`
 
 $('main').appendChild(document.createElement('my-component'))
 $('#stop-animation').addEventListener('click', _ => {

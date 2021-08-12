@@ -19,6 +19,7 @@ interface RunResponse {
 const STYLE = `
 #container {
     display: flex;
+    border: solid 24px hsl(0, 0%, 12%);
     flex-flow: column nowrap;
     align-items: center;
     padding: 48px;
@@ -66,6 +67,20 @@ button, select {
 }
 `
 
+const debounce = (fn: Function, delay = 1000) => {
+  let busy = false
+  return () => {
+    if (!busy) {
+      busy = true
+      fn()
+      setTimeout(() => {
+        busy = false
+      }, delay)
+      return
+    }
+  }
+}
+
 class MyComponent extends HTMLElement {
   _container: HTMLDivElement
   _catSelectorContainer: ICatSelectorContainer
@@ -82,7 +97,7 @@ class MyComponent extends HTMLElement {
     this._catSelectorContainer = CatSelectorContainer(
       this._container,
       (value: CatEntry) => {
-        this._selectedCat !== value && this.refresh(value)
+        this._selectedCat !== value && debounce(() => this.refresh(value))()
         this._selectedCat = value
       },
     )
@@ -91,7 +106,7 @@ class MyComponent extends HTMLElement {
 
     this._container.id = 'container'
     this._button.textContent = 'Get/Refresh'
-    this._button.addEventListener('click', () => this.refresh())
+    this._button.addEventListener('click', debounce(this.refresh))
 
     const style = document.createElement('style')
     style.textContent = STYLE
@@ -99,12 +114,20 @@ class MyComponent extends HTMLElement {
     shadow.append(style, this._container)
   }
 
+  connectedCallback() {
+    this.isConnected && this.refresh()
+  }
+
   refresh = async (value: CatEntry = this._selectedCat) => {
     this._display.message = 'Getting times...'
     const res = await this.getRunsForCat(value)
 
     if (!res.ok) {
-      this._display.message = 'Failed! Please Retry.'
+      if (res.status === 420) {
+        this._display.message = "SRC's busy! Retry Later."
+      } else {
+        this._display.message = 'Failed! Please Retry.'
+      }
       return
     }
 
