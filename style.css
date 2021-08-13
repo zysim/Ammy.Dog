@@ -10,13 +10,7 @@
 }
 
 body {
-    background-image: url(./assets/ammy-borking.gif);
     height: 100%;
-}
-
-body.no-anim {
-    background-image: url(./assets/bead.png);
-    /* background-image: url(./assets/ammy-static.png); */
 }
 
 #stop-animation {
