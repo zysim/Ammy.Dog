@@ -68,7 +68,7 @@ button, select {
 }
 `
 
-class MyComponent extends HTMLElement {
+class MainComponent extends HTMLElement {
   _container: HTMLDivElement
   _catSelectorContainer: ICatSelectorContainer
   _display: IDisplay
@@ -137,5 +137,5 @@ class MyComponent extends HTMLElement {
 }
 
 export default () => {
-  customElements.define('my-component', MyComponent)
+  customElements.define('main-component', MainComponent)
 }
