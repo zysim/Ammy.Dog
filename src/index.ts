@@ -1,5 +1,5 @@
 // import registerServiceWorker from './registerServiceWorker.js'
-import { $ } from './utils/buildComponents'
+import { $ } from './utils/jQuery'
 import MainComponent from './components/MainComponent/'
 
 const backgroundImages = ['ammy-static', 'bead']
