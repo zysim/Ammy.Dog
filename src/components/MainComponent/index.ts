@@ -56,7 +56,7 @@ button, select {
   text-align: center;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 800px) {
   #cat-selector-container {
     flex-flow: row nowrap;
   }

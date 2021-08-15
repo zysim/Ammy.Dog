@@ -13,7 +13,11 @@
 }
 
 body {
+  margin: 0px;
   height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
 }
 
 /**
@@ -21,7 +25,7 @@ body {
   * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
   * @link http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
   */
-#skip-main {
+.a11y-hide {
   border: 0;
   background-color: var(--white);
   clip-path: polygon(0 0, 0% 0%, 0% 100%, 0 0%);
@@ -41,8 +45,8 @@ body {
   * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
   * @link https://www.drupal.org/node/897638
   */
-#skip-main:active,
-#skip-main:focus {
+.a11y-hide:active,
+.a11y-hide:focus {
   clip-path: unset;
   height: auto;
   margin: 0;
@@ -54,17 +58,44 @@ body {
 }
 
 header {
-  /*  */
+  background-color: var(--white);
+  border-bottom: solid 3px var(--black);
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+header h1,h3 {
+  margin: 0px;
 }
 
 main {
-  height: 100%;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
 }
 
+footer {
+  background-color: var(--white);
+  border-top: solid 3px var(--black);
+}
+
+@media (min-width: 1200px) {
+  :root {
+    font-size: 32px;
+  }
+
+  header {
+    flex-direction: row;
+    align-items: baseline;
+  }
+
+  header h1,h3 {
+    margin: 24px 12px;
+  }
+}
+
+/* Noscript descriptions */
 html:lang(en) article:not(:lang(en)) {
   display: none;
 }
