@@ -20,10 +20,10 @@ interface RunResponse {
 const STYLE = `
 #container {
     display: flex;
-    border: solid 24px hsl(0, 0%, 12%);
+    border: solid 18px hsl(0, 0%, 12%);
     flex-flow: column nowrap;
     align-items: center;
-    padding: 48px;
+    padding: 24px;
     background-color: hsla(0, 0%, 100%, 97%);
 }
 
@@ -57,6 +57,11 @@ button, select {
 }
 
 @media (min-width: 800px) {
+  #container {
+    border: solid 24px hsl(0, 0%, 12%);
+    padding: 48px;
+}
+
   #cat-selector-container {
     flex-flow: row nowrap;
   }
