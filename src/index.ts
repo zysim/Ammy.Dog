@@ -11,8 +11,5 @@ $('body')!.style.backgroundImage = `url(assets/${
 }.png)`
 
 $('main')!.appendChild(document.createElement('main-component'))
-$('#stop-animation')!.addEventListener('click', _ => {
-  $('body')!.classList.toggle('no-anim')
-})
 
 // registerServiceWorker()

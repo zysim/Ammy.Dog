@@ -18,13 +18,22 @@ interface RunResponse {
 }
 
 const STYLE = `
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 #container {
-    display: flex;
-    border: solid 18px hsl(0, 0%, 12%);
-    flex-flow: column nowrap;
-    align-items: center;
-    padding: 24px;
-    background-color: hsla(0, 0%, 100%, 97%);
+  display: flex;
+  border: solid 18px hsl(0, 0%, 12%);
+  flex-flow: column nowrap;
+  align-items: center;
+  padding: 24px;
+  background-color: hsla(0, 0%, 100%, 97%);
 }
 
 button, select {
@@ -35,6 +44,7 @@ button, select {
 #cat-selector-container {
   display: flex;
   flex-flow: column nowrap;
+  align-items: center;
 }
 
 #cat-select {
@@ -44,6 +54,18 @@ button, select {
 .cat-option {
   font-family: "astralsOkami", serif;
   font-size: 16px;
+}
+
+.hide {
+  display: none;
+}
+
+#loading-icon {
+  height: 2.5rem;
+  animation-name: spin;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 #display {
@@ -77,6 +99,7 @@ class MainComponent extends HTMLElement {
   _container: HTMLDivElement
   _catSelectorContainer: ICatSelectorContainer
   _display: IDisplay
+  _loadingIcon: HTMLImageElement
   _button: HTMLButtonElement
   _selectedCat = CatEntry['NG+ Any%']
 
@@ -93,10 +116,15 @@ class MainComponent extends HTMLElement {
         this._selectedCat = value
       },
     )
+    this._loadingIcon = this._container.appendChild(
+      document.createElement('img'),
+    )
     this._display = Display(this._container)
     this._button = this._container.appendChild(document.createElement('button'))
 
     this._container.id = 'container'
+    this._loadingIcon.id = 'loading-icon'
+    this._loadingIcon.src = 'assets/ammy-borking.gif'
     this._button.textContent = 'Get/Refresh'
     this._button.addEventListener('click', debounce(this.refresh))
 
@@ -111,8 +139,11 @@ class MainComponent extends HTMLElement {
   }
 
   refresh = async (value: CatEntry = this._selectedCat) => {
-    this._display.message = 'Getting times...'
+    this._display.hide()
+    this._loadingIcon.classList.remove('hide')
     const res = await this.getRunsForCat(value)
+    this._loadingIcon.classList.add('hide')
+    this._display.show()
 
     if (!res.ok) {
       if (res.status === 420) {

@@ -1,7 +1,9 @@
 export interface IDisplay {
-  timeDisplay: HTMLDivElement | null
+  timeDisplay: HTMLDivElement
   time: number
   message: string
+  hide: () => void
+  show: () => void
 }
 
 interface ITime {
@@ -33,7 +35,7 @@ const displayThresholdTime = (timeDisplay: HTMLDivElement, time: number) => {
 export default (parent: HTMLElement): IDisplay => {
   const timeDisplay = parent.appendChild(document.createElement('div'))
   timeDisplay.id = 'display'
-  timeDisplay.textContent = '-'
+  timeDisplay.classList.add('hide')
 
   return {
     timeDisplay,
@@ -50,6 +52,14 @@ export default (parent: HTMLElement): IDisplay => {
         throw Error
       }
       this.timeDisplay.textContent = message
+    },
+
+    hide() {
+      this.timeDisplay.classList.add('hide')
+    },
+
+    show() {
+      this.timeDisplay.classList.remove('hide')
     },
   }
 }
