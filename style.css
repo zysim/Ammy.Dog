@@ -92,6 +92,7 @@ h3 {
   display: flex;
   align-self: center;
   padding-right: 12px;
+  flex-direction: column;
 }
 
 #top-right-links a {
@@ -119,6 +120,12 @@ footer {
   background-color: var(--white);
   border-top: solid 3px var(--black);
   padding: 8px;
+}
+
+@media (min-width: 600px) {
+  #top-right-links {
+    flex-direction: row;
+  }
 }
 
 @media (min-width: 1200px) {
