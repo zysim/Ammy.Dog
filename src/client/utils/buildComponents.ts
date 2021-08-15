@@ -111,8 +111,7 @@ export const buildElement = (tokens: string[]) => {
   return r.element
 }
 
-export const $ = (selector: string) =>
-  document.querySelector(selector) as Element
+export const $ = document.querySelector
 
 export const createElement = (element: MineElement) => {
   const el = document.createElement(element.tag)

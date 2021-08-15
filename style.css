@@ -1,29 +1,70 @@
 @font-face {
-    font-family: "astralsOkami";
-    src: url(assets/Astralsokami-Regular.otf);
+  font-family: 'astralsOkami';
+  src: url(assets/Astralsokami-Regular.otf);
 }
 
 :root {
-    font-family: "astralsOkami", serif;
-    font-size: 24px;
-    height: 100%;
+  font-family: 'astralsOkami', serif;
+  font-size: 24px;
+  height: 100%;
+
+  --white: hsl(0, 0%, 100%);
+  --black: hsl(0, 0%, 10%);
 }
 
 body {
-    height: 100%;
+  height: 100%;
 }
 
-#stop-animation {
-    /* opacity: 0%; */
-    position: absolute;
-    top: 12px;
-    left: 12px;
+/**
+  * Visually hide an element, but leave it available for screen readers
+  * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
+  * @link http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+  */
+#skip-main {
+  border: 0;
+  background-color: var(--white);
+  clip-path: polygon(0 0, 0% 0%, 0% 100%, 0 0%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+  padding: 8px;
+  color: var(--black);
+}
+
+/**
+  * Extends the .screen-reader class to allow the element to be focusable when navigated to via the keyboard
+  * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
+  * @link https://www.drupal.org/node/897638
+  */
+#skip-main:active,
+#skip-main:focus {
+  clip-path: unset;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  white-space: normal;
+  width: auto;
+  outline: 3px solid var(--black);
+}
+
+header {
+  /*  */
 }
 
 main {
-    height: 100%;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    align-items: center;
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+html:lang(en) article:not(:lang(en)) {
+  display: none;
 }
