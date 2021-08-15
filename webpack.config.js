@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = {
   mode: 'development',
   devtool: 'inline-source-map', //https://github.com/TypeStrong/ts-loader#devtool--sourcemaps
-  entry: './src/client/index.ts',
+  entry: './src/index.ts',
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname),
@@ -15,7 +15,7 @@ module.exports = {
     rules: [
       {
         test: /\.ts$/,
-        include: [path.resolve(__dirname, 'src/client')],
+        include: [path.resolve(__dirname, 'src')],
         loader: 'ts-loader',
         options: {
           configFile: 'tsconfig.json',
