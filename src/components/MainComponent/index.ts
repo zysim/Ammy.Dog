@@ -1,8 +1,7 @@
 import debounce from '../../utils/debounce'
-import { CatEntry } from './CatSelector'
-import CatSelectorContainer, {
-  ICatSelectorContainer,
-} from './CatSelectorContainer'
+import fetchApi from '../../utils/fetchApi'
+import { compose } from '../../utils/fp'
+import CatSelectorContainer from './CatSelectorContainer'
 import Display, { IDisplay } from './Display'
 
 interface RunResponse {
@@ -38,22 +37,7 @@ const STYLE = `
 
 button, select {
   font-size: 24px;
-  font-family: "astralsOkami", serif;
-}
-
-#cat-selector-container {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-}
-
-#cat-select {
-  padding: 0rem .5rem;
-}
-
-.cat-option {
-  font-family: "astralsOkami", serif;
-  font-size: 16px;
+  font-family: "astralsOkami", sans-serif;
 }
 
 .hide {
@@ -82,10 +66,6 @@ button, select {
   #container {
     border: solid 24px hsl(0, 0%, 12%);
     padding: 48px;
-}
-
-  #cat-selector-container {
-    flex-flow: row nowrap;
   }
 
   #display {
@@ -97,11 +77,11 @@ button, select {
 
 class MainComponent extends HTMLElement {
   _container: HTMLDivElement
-  _catSelectorContainer: ICatSelectorContainer
+  //_catSelectorContainer: ICatSelectorContainer
   _display: IDisplay
   _loadingIcon: HTMLImageElement
   _button: HTMLButtonElement
-  _selectedCat = CatEntry['NG+ Any%']
+  // _selectedCat = CatEntry['NG+ Any%']
 
   constructor() {
     super()
@@ -109,15 +89,16 @@ class MainComponent extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' })
 
     this._container = document.createElement('div')
-    this._catSelectorContainer = CatSelectorContainer(
-      this._container,
-      (value: CatEntry) => {
-        this._selectedCat !== value && debounce(() => this.refresh(value))()
-        this._selectedCat = value
-      },
-    )
+    this._container.appendChild(document.createElement(CatSelectorContainer))
+    //this._catSelectorContainer = CatSelectorContainer(
+    //  this._container,
+    //  (value: CatEntry) => {
+    //    this._selectedCat !== value && debounce(() => this.refresh(value))()
+    //    this._selectedCat = value
+    //  },
+    //)
     this._loadingIcon = this._container.appendChild(
-      document.createElement('img'),
+      document.createElement('img')
     )
     this._display = Display(this._container)
     this._button = this._container.appendChild(document.createElement('button'))
@@ -126,7 +107,7 @@ class MainComponent extends HTMLElement {
     this._loadingIcon.id = 'loading-icon'
     this._loadingIcon.src = 'assets/ammy-borking.gif'
     this._button.textContent = 'Get/Refresh'
-    this._button.addEventListener('click', debounce(this.refresh))
+    // this._button.addEventListener('click', debounce(this.refresh))
 
     const style = document.createElement('style')
     style.textContent = STYLE
@@ -135,10 +116,21 @@ class MainComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    this.isConnected && this.refresh()
+    if (!this.isConnected) return
+
+    this._container.addEventListener('catChanged', e => {
+      // @ts-ignore Don't have a CustomEvent handler yet
+      console.log(e.detail.text())
+    })
   }
 
-  refresh = async (value: CatEntry = this._selectedCat) => {
+  getLocalCats = () => {
+    const cats = localStorage.getItem('cats')
+    return cats ? JSON.parse(cats) : null
+  }
+
+
+  refresh = async (value: 'test') => {
     this._display.hide()
     this._loadingIcon.classList.remove('hide')
     const res = await this.getRunsForCat(value)
@@ -161,14 +153,9 @@ class MainComponent extends HTMLElement {
     }
   }
 
-  getRunsForCat = async (cat: CatEntry) =>
-    fetch(
-      `https://www.speedrun.com/api/v1/leaderboards/w6j7546j/category/${cat}?var-68k4dyzl=4qy3r57l&top=1`,
-      {
-        headers: {
-          Accept: 'application/json, text/javascript, */*; q=0.01',
-        },
-      },
+  getRunsForCat = async (cat: string) =>
+    fetchApi(
+      `leaderboards/w6j7546j/category/${cat}?var-68k4dyzl=4qy3r57l&top=1`
     )
 }
 

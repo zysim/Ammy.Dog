@@ -1,22 +1,47 @@
+import { c } from '../../utils/jQuery'
 import CatSelector, { OnChange } from './CatSelector'
+
+const TAG = 'cat-selector-container'
 
 export interface ICatSelectorContainer {
   el: HTMLDivElement | null
 }
 
-export default (
-  parent: HTMLElement,
-  onChange: OnChange,
-): ICatSelectorContainer => {
-  const el = parent.appendChild(document.createElement('div'))
-  el.id = 'cat-selector-container'
-  const title1 = el.appendChild(document.createElement('span'))
-  CatSelector(el, onChange)
-  const title2 = el.appendChild(document.createElement('span'))
-  title1.textContent = 'You have to show video proof if your'
-  title2.textContent = 'run is quicker than or exactly at'
+const style = `
+#container {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
 
-  return {
-    el,
+@media (min-width: 800px) {
+  #container {
+    flex-direction: row;
   }
 }
+`
+
+const template = `
+<div id="container">
+  <span>You have to show video proof if your</span>
+  <span>run is quicker than or exactly at</span>
+</div>
+`
+
+const initStyle = () => Object.assign(c('style'), { textContent: style })
+
+const init = () => Object.assign(c('div'), { innerHTML: template }).querySelector('#container') as HTMLDivElement
+
+class CatSelectorContainer extends HTMLElement {
+  constructor() {
+    super()
+    const shadow = this.attachShadow({ mode: 'open' })
+    const container = init()
+    container.insertBefore(c(CatSelector), container.lastElementChild)
+    shadow.append(initStyle(), container)
+  }
+}
+
+customElements.define(TAG, CatSelectorContainer)
+
+export default TAG
