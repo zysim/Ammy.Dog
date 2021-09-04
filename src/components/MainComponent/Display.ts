@@ -43,7 +43,6 @@ export default (parent: HTMLElement): IDisplay => {
       if (!this.timeDisplay) {
         throw Error
       }
-
       displayThresholdTime(this.timeDisplay, calculateThresholdTime(time))
     },
 

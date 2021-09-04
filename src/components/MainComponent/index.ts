@@ -1,6 +1,9 @@
+import constants from '../../constants'
+import { createCustomEvent } from '../../utils'
+import { getDefaultCat } from '../../utils/cats'
 import debounce from '../../utils/debounce'
 import fetchApi from '../../utils/fetchApi'
-import { compose } from '../../utils/fp'
+import { c } from '../../utils/jQuery'
 import CatSelectorContainer from './CatSelectorContainer'
 import Display, { IDisplay } from './Display'
 
@@ -77,39 +80,31 @@ button, select {
 
 class MainComponent extends HTMLElement {
   _container: HTMLDivElement
-  //_catSelectorContainer: ICatSelectorContainer
   _display: IDisplay
   _loadingIcon: HTMLImageElement
   _button: HTMLButtonElement
-  // _selectedCat = CatEntry['NG+ Any%']
+  _selectedCat = getDefaultCat()
 
   constructor() {
     super()
 
     const shadow = this.attachShadow({ mode: 'open' })
 
-    this._container = document.createElement('div')
-    this._container.appendChild(document.createElement(CatSelectorContainer))
-    //this._catSelectorContainer = CatSelectorContainer(
-    //  this._container,
-    //  (value: CatEntry) => {
-    //    this._selectedCat !== value && debounce(() => this.refresh(value))()
-    //    this._selectedCat = value
-    //  },
-    //)
-    this._loadingIcon = this._container.appendChild(
-      document.createElement('img')
-    )
+    this._container = c('div')
+    this._container.appendChild(c(CatSelectorContainer))
+    this._loadingIcon = this._container.appendChild(c('img'))
     this._display = Display(this._container)
-    this._button = this._container.appendChild(document.createElement('button'))
+    this._button = this._container.appendChild(c('button'))
 
     this._container.id = 'container'
+    // TODO: Fix this. This doesn't trigger.
+    this._container.addEventListener('triggerFetch', this.refresh)
     this._loadingIcon.id = 'loading-icon'
     this._loadingIcon.src = 'assets/ammy-borking.gif'
     this._button.textContent = 'Get/Refresh'
-    // this._button.addEventListener('click', debounce(this.refresh))
+    this._button.addEventListener('click', debounce(this.refresh))
 
-    const style = document.createElement('style')
+    const style = c('style')
     style.textContent = STYLE
 
     shadow.append(style, this._container)
@@ -118,24 +113,24 @@ class MainComponent extends HTMLElement {
   connectedCallback() {
     if (!this.isConnected) return
 
+    this.refresh()
+
     this._container.addEventListener('catChanged', e => {
-      // @ts-ignore Don't have a CustomEvent handler yet
-      console.log(e.detail.text())
+      // @ts-ignore TS doesn't have CustomEvent handler support yet
+      const { cat } = e.detail
+      this._selectedCat = cat.value
+      this.saveDefaultCatNameToLocalStorage(cat.innerText)
+      this.refresh()
     })
   }
 
-  getLocalCats = () => {
-    const cats = localStorage.getItem('cats')
-    return cats ? JSON.parse(cats) : null
-  }
-
-
-  refresh = async (value: 'test') => {
-    this._display.hide()
-    this._loadingIcon.classList.remove('hide')
-    const res = await this.getRunsForCat(value)
-    this._loadingIcon.classList.add('hide')
-    this._display.show()
+  refresh = async () => {
+    if (typeof this._selectedCat !== 'string') {
+      this._display.message = 'Something went wrong on our end! Try refreshing.'
+      return
+    }
+    this.showLoading()
+    const res = await this.getWrForCat(this._selectedCat)
 
     if (!res.ok) {
       if (res.status === 420) {
@@ -143,20 +138,58 @@ class MainComponent extends HTMLElement {
       } else {
         this._display.message = 'Failed! Please Retry.'
       }
+      this.hideLoading()
       return
     }
 
     try {
-      this._display.time = (await res.json()).data.runs[0].run.times.ingame_t
+      this.setDisplayTime(await res.json())
+      this.hideLoading()
     } catch (e) {
       console.log({ e })
     }
   }
 
-  getRunsForCat = async (cat: string) =>
+  hideLoading = () => {
+    this._loadingIcon.classList.add('hide')
+    this.hideLoadingImage()
+    this._display.show()
+  }
+
+  showLoading = () => {
+    this.showLoadingImage()
+    this._display.hide()
+    this._loadingIcon.classList.remove('hide')
+  }
+
+  getWrForCat = async (cat: string) =>
     fetchApi(
-      `leaderboards/w6j7546j/category/${cat}?var-68k4dyzl=4qy3r57l&top=1`
+      `leaderboards/w6j7546j/category/${cat}?var-68k4dyzl=4qy3r57l&top=1`,
     )
+
+  saveDefaultCatNameToLocalStorage = (catName: string) => {
+    localStorage.setItem(constants.DEFAULT_CAT_NAME_KEY, catName)
+  }
+
+  setDisplayTime = async (json: RunResponse) => {
+    this._display.time = json.data.runs[0].run.times.ingame_t
+  }
+
+  // TODO: Doesn't work; event seemingly doesn't dispatch.
+  hideLoadingImage = () => {
+    this._container.dispatchEvent(
+      createCustomEvent('isLoading', { isLoading: false }),
+    )
+  }
+
+  // TODO: Ditto.
+  showLoadingImage = () => {
+    this._container.dispatchEvent(
+      createCustomEvent('isLoading', {
+        isLoading: true,
+      }),
+    )
+  }
 }
 
 export default () => {

@@ -1,3 +1,5 @@
+import { createCustomEvent } from '../../utils'
+import { getDefaultCat } from '../../utils/cats'
 import fetchApi from '../../utils/fetchApi'
 import { compose } from '../../utils/fp'
 import { c } from '../../utils/jQuery'
@@ -21,8 +23,6 @@ const FALLBACK: CatEntries = {
   'Top Dog': 'mkeozqxd',
   'All Major Bosses': '9d831962',
 }
-
-const DEFAULT_ENTRY: string = 'xk901ggk' // NG+ Any%
 
 export type OnChange = (value: string) => void
 
@@ -56,9 +56,9 @@ const template = `
 `
 
 const optionTemplate = (entry: [string, string]) => `
-<option ${entry[1] === DEFAULT_ENTRY && 'selected'} class="cat-option" value=${
-  entry[1]
-}>
+<option ${
+  entry[1] === getDefaultCat() && 'selected'
+} class="cat-option" value=${entry[1]}>
 ${entry[0]}
 </option>
 `
@@ -84,12 +84,13 @@ const parseCatApiJson = async (
 ): Promise<CatEntries | null> =>
   (await json)
     ? ((await json) as CatResponse).data.reduce(
-        (acc, { id, name }) => ({ ...acc, [name]: id }),
+        (acc, { id, name }) =>
+          name.startsWith('(Legacy)') ? acc : { ...acc, [name]: id },
         {},
       )
     : null
 
-const writeCatsToLocalAndReturn = async (
+const writeCatsToLocalStorage = async (
   cats: Promise<CatEntries | null>,
 ): Promise<CatEntries> => {
   localStorage.setItem('cats', JSON.stringify((await cats) ?? FALLBACK))
@@ -106,11 +107,10 @@ class CatSelector extends HTMLElement {
 
     this.buildSelect(this.getCats(), select)
 
-    select.addEventListener('change', e => {
+    select.addEventListener('change', _ => {
       select.dispatchEvent(
-        new CustomEvent('catChanged', {
-          bubbles: true,
-          detail: { text: () => select.value },
+        createCustomEvent('catChanged', {
+          cat: select.options.item(select.selectedIndex),
         }),
       )
     })
@@ -134,10 +134,16 @@ class CatSelector extends HTMLElement {
       ? JSON.parse(localStorage.getItem('cats') as string)
       : this.fetchCatsAndParseJson()
 
+  triggerFetch = (cats: Promise<CatEntries>) => {
+    this.dispatchEvent(createCustomEvent('triggerFetch'))
+    return cats
+  }
+
   fetchCatsAndParseJson: () => Promise<CatEntries> = compose(
     fetchCats,
     parseCatApiJson,
-    writeCatsToLocalAndReturn,
+    writeCatsToLocalStorage,
+    this.triggerFetch,
   )
 }
 
