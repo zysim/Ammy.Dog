@@ -4,7 +4,7 @@ import constants from './constants'
 import { $ } from './utils/jQuery'
 
 const getRandomImage = (from: string[]) =>
-  `url(assets/${from[~~(Math.random() * from.length)]})`
+  `url(${from[~~(Math.random() * from.length)]})`
 
 const currentBackgroundImage = getRandomImage(constants.BACKGROUND_IMAGES)
 
