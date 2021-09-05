@@ -1,5 +1,6 @@
 export default {
   DEFAULT_CAT_NAME_KEY: 'defaultCatName',
+  DEFAULT_CAT_NAME: 'NG+ Any%',
   BACKGROUND_IMAGES: [
     'assets/background-images/ammy-static.png',
     'assets/background-images/bead.png',
