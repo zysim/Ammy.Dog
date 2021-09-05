@@ -1,8 +1,10 @@
-import constants from "../constants"
+import constants from '../constants'
 
 export type Cats = { [name: string]: string }
 
-const DEFAULT_CAT_NAME = localStorage.getItem(constants.DEFAULT_CAT_NAME_KEY) || 'NG+ Any%'
+export const DEFAULT_CAT_NAME =
+  localStorage.getItem(constants.DEFAULT_CAT_NAME_KEY) ||
+  constants.DEFAULT_CAT_NAME
 
 export const getCats = (): Cats | null => {
   const cats = localStorage.getItem('cats')
@@ -12,6 +14,6 @@ export const getCats = (): Cats | null => {
   return null
 }
 
-export const getCat = (cat: string): string | null => getCats()?.[cat] || null
+export const getCat = (name: string): string | null => getCats()?.[name] || null
 
-export const getDefaultCat = (): string => getCat(DEFAULT_CAT_NAME) as string
+export const getDefaultCat = (): string | null => getCat(DEFAULT_CAT_NAME)

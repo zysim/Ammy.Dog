@@ -91,14 +91,13 @@ class MainComponent extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' })
 
     this._container = c('div')
+
     this._container.appendChild(c(CatSelectorContainer))
     this._loadingIcon = this._container.appendChild(c('img'))
     this._display = Display(this._container)
     this._button = this._container.appendChild(c('button'))
 
     this._container.id = 'container'
-    // TODO: Fix this. This doesn't trigger.
-    this._container.addEventListener('triggerFetch', this.refresh)
     this._loadingIcon.id = 'loading-icon'
     this._loadingIcon.src = 'assets/ammy-borking.gif'
     this._button.textContent = 'Get/Refresh'
@@ -113,7 +112,10 @@ class MainComponent extends HTMLElement {
   connectedCallback() {
     if (!this.isConnected) return
 
-    this.refresh()
+    // TODO: Fix this. This doesn't trigger.
+    this._container.addEventListener('triggerFetch', this.refresh)
+
+    this._selectedCat && this.refresh()
 
     this._container.addEventListener('catChanged', e => {
       // @ts-ignore TS doesn't have CustomEvent handler support yet
@@ -126,7 +128,11 @@ class MainComponent extends HTMLElement {
 
   refresh = async () => {
     if (typeof this._selectedCat !== 'string') {
-      this._display.message = 'Something went wrong on our end! Try refreshing.'
+      if (!(this._selectedCat = getDefaultCat())) {
+        this._display.message =
+          'Something went wrong on our end! Try refreshing.'
+        this.hideLoading()
+      }
       return
     }
     this.showLoading()
