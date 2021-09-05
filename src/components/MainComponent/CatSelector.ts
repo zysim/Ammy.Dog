@@ -1,3 +1,4 @@
+import constants from '../../constants'
 import { createCustomEvent } from '../../utils'
 import { getDefaultCat } from '../../utils/cats'
 import fetchApi from '../../utils/fetchApi'
@@ -94,28 +95,36 @@ const writeCatsToLocalStorage = async (
   cats: Promise<CatEntries | null>,
 ): Promise<CatEntries> => {
   localStorage.setItem('cats', JSON.stringify((await cats) ?? FALLBACK))
+  localStorage.setItem(
+    constants.DEFAULT_CAT_NAME_KEY,
+    constants.DEFAULT_CAT_NAME,
+  )
   return (await cats) ?? FALLBACK
 }
 
 class CatSelector extends HTMLElement {
+  _select: HTMLSelectElement
+
   constructor() {
     super()
     const shadow = this.attachShadow({ mode: 'open' })
     const container = init()
 
-    const select = container.querySelector('select') as HTMLSelectElement
+    this._select = container.querySelector('select') as HTMLSelectElement
 
-    this.buildSelect(this.getCats(), select)
-
-    select.addEventListener('change', _ => {
-      select.dispatchEvent(
+    this._select.addEventListener('change', _ => {
+      this._select.dispatchEvent(
         createCustomEvent('catChanged', {
-          cat: select.options.item(select.selectedIndex),
+          cat: this._select.options.item(this._select.selectedIndex),
         }),
       )
     })
 
     shadow.append(initStyle(), container)
+  }
+
+  connectedCallback() {
+    this.buildSelect(this.getCats(), this._select)
   }
 
   buildSelect = (
