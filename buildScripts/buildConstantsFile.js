@@ -4,6 +4,8 @@ const path = require('path')
 
 const buildDefaultCatNameKey = () => `DEFAULT_CAT_NAME_KEY: 'defaultCatName'`
 
+const buildDefaultCatName = () => `DEFAULT_CAT_NAME: 'NG+ Any%'`
+
 const buildAssets = () => {
   try {
     const backgroundImages = fs.readdirSync(
@@ -25,9 +27,9 @@ const buildAssets = () => {
 
 const wrapObject = builtProps => `export default {${builtProps}}`
 
-const output = wrapObject([buildDefaultCatNameKey(), buildAssets()].join(','))
-
-fs.writeFile(path.join(__dirname, '../src/constants.ts'), output, postWriteFile)
+const output = wrapObject(
+  [buildDefaultCatNameKey(), buildDefaultCatName(), buildAssets()].join(','),
+)
 
 const postWriteFile = err => {
   if (err !== null) {
@@ -35,8 +37,13 @@ const postWriteFile = err => {
     return
   }
 
-  exec('npx prettier -w ../src/constants.ts', (error, _, stderr) => {
-    error && console.error(error)
-    stderr && console.error(stderr)
-  })
+  exec(
+    `npx prettier -w ${path.join(__dirname, '../src/constants.ts')}`,
+    (error, _, stderr) => {
+      error && console.error(error)
+      stderr && console.error(stderr)
+    },
+  )
 }
+
+fs.writeFile(path.join(__dirname, '../src/constants.ts'), output, postWriteFile)
