@@ -1,6 +1,5 @@
 import constants from '../../constants'
 import { createCustomEvent } from '../../utils'
-import { getDefaultCat } from '../../utils/cats'
 import debounce from '../../utils/debounce'
 import fetchApi from '../../utils/fetchApi'
 import { c } from '../../utils/jQuery'
@@ -83,7 +82,7 @@ class MainComponent extends HTMLElement {
   _display: IDisplay
   _loadingIcon: HTMLImageElement
   _button: HTMLButtonElement
-  _selectedCat = getDefaultCat()
+  _selectedCat: string | null = null
 
   constructor() {
     super()
@@ -112,8 +111,10 @@ class MainComponent extends HTMLElement {
   connectedCallback() {
     if (!this.isConnected) return
 
-    // TODO: Fix this. This doesn't trigger.
-    this._container.addEventListener('triggerFetch', this.refresh)
+    this._container.addEventListener('triggerFetch', e => {
+      // @ts-ignore TS doesn't have support for custom events yet
+      this.refresh(e.detail.whyDoIHaveToDoThis)
+    })
 
     this._selectedCat && this.refresh()
 
@@ -126,17 +127,14 @@ class MainComponent extends HTMLElement {
     })
   }
 
-  refresh = async () => {
-    if (typeof this._selectedCat !== 'string') {
-      if (!(this._selectedCat = getDefaultCat())) {
-        this._display.message =
-          'Something went wrong on our end! Try refreshing.'
-        this.hideLoading()
-      }
+  refresh = async (cat = this._selectedCat) => {
+    if (typeof cat !== 'string') {
+      this._display.message = 'Something went wrong on our end! Try refreshing.'
+      this.hideLoading()
       return
     }
     this.showLoading()
-    const res = await this.getWrForCat(this._selectedCat)
+    const res = await this.getWrForCat(cat)
 
     if (!res.ok) {
       if (res.status === 420) {

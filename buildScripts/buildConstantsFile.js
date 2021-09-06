@@ -6,7 +6,7 @@ const buildDefaultCatNameKey = () => `DEFAULT_CAT_NAME_KEY: 'defaultCatName'`
 
 const buildDefaultCatName = () => `DEFAULT_CAT_NAME: 'NG+ Any%'`
 
-const buildAssets = () => {
+const buildAssetPaths = () => {
   try {
     const backgroundImages = fs.readdirSync(
       path.join(__dirname, '../assets/background-images'),
@@ -25,10 +25,25 @@ const buildAssets = () => {
   }
 }
 
+const buildFallbackCatObject = () => `
+FALLBACK: {
+  'NG Any%': 'zdnwp4xd',
+  'NG+ Any%': 'xk901ggk',
+  'NG All Brushes': 'q25owqgk',
+  'NG+ All Brushes': 'z27gy6o2',
+  'Top Dog': 'mkeozqxd',
+  'All Major Bosses': '9d831962',
+}`
+
 const wrapObject = builtProps => `export default {${builtProps}}`
 
 const output = wrapObject(
-  [buildDefaultCatNameKey(), buildDefaultCatName(), buildAssets()].join(','),
+  [
+    buildDefaultCatNameKey(),
+    buildDefaultCatName(),
+    buildAssetPaths(),
+    buildFallbackCatObject(),
+  ].join(','),
 )
 
 const postWriteFile = err => {

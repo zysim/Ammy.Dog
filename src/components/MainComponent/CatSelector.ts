@@ -2,7 +2,7 @@ import constants from '../../constants'
 import { createCustomEvent } from '../../utils'
 import { getDefaultCat } from '../../utils/cats'
 import fetchApi from '../../utils/fetchApi'
-import { compose } from '../../utils/fp'
+import { compose, curry } from '../../utils/fp'
 import { c } from '../../utils/jQuery'
 
 export type CatEntries = {
@@ -14,15 +14,6 @@ interface CatResponse {
     id: string
     name: string
   }[]
-}
-
-const FALLBACK: CatEntries = {
-  'NG Any%': 'zdnwp4xd',
-  'NG+ Any%': 'xk901ggk',
-  'NG All Brushes': 'q25owqgk',
-  'NG+ All Brushes': 'z27gy6o2',
-  'Top Dog': 'mkeozqxd',
-  'All Major Bosses': '9d831962',
 }
 
 export type OnChange = (value: string) => void
@@ -94,12 +85,29 @@ const parseCatApiJson = async (
 const writeCatsToLocalStorage = async (
   cats: Promise<CatEntries | null>,
 ): Promise<CatEntries> => {
-  localStorage.setItem('cats', JSON.stringify((await cats) ?? FALLBACK))
-  localStorage.setItem(
-    constants.DEFAULT_CAT_NAME_KEY,
-    constants.DEFAULT_CAT_NAME,
+  try {
+    localStorage.setItem(
+      'cats',
+      JSON.stringify((await cats) ?? constants.FALLBACK),
+    )
+    localStorage.setItem(
+      constants.DEFAULT_CAT_NAME_KEY,
+      constants.DEFAULT_CAT_NAME,
+    )
+  } catch (e) {
+    // It's most likely a QuotaExceededError. Just log the error just in case and ignore
+    console.error(e)
+  }
+  return (await cats) ?? constants.FALLBACK
+}
+
+const triggerFetch = async (el: CatSelector, cats: Promise<CatEntries>) => {
+  el.dispatchEvent(
+    createCustomEvent('triggerFetch', {
+      whyDoIHaveToDoThis: (await cats)[constants.DEFAULT_CAT_NAME],
+    }),
   )
-  return (await cats) ?? FALLBACK
+  return cats
 }
 
 class CatSelector extends HTMLElement {
@@ -143,16 +151,11 @@ class CatSelector extends HTMLElement {
       ? JSON.parse(localStorage.getItem('cats') as string)
       : this.fetchCatsAndParseJson()
 
-  triggerFetch = (cats: Promise<CatEntries>) => {
-    this.dispatchEvent(createCustomEvent('triggerFetch'))
-    return cats
-  }
-
   fetchCatsAndParseJson: () => Promise<CatEntries> = compose(
     fetchCats,
     parseCatApiJson,
     writeCatsToLocalStorage,
-    this.triggerFetch,
+    curry(triggerFetch, this),
   )
 }
 
