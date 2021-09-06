@@ -1,4 +1,5 @@
 import constants from '../../constants'
+import { getDefaultCat } from '../../utils/cats'
 import debounce from '../../utils/debounce'
 import fetchApi from '../../utils/fetchApi'
 import { c, e } from '../../utils/jQuery'
@@ -81,7 +82,7 @@ class MainComponent extends HTMLElement {
   _display: IDisplay
   _loadingIcon: HTMLImageElement
   _button: HTMLButtonElement
-  _selectedCat: string | null = null
+  _selectedCat: string | null = getDefaultCat()
 
   constructor() {
     super()
@@ -91,6 +92,22 @@ class MainComponent extends HTMLElement {
     this._container = c('div')
 
     this._container.appendChild(c(CatSelectorContainer))
+
+    this._container.addEventListener('initialFetch', e => {
+      // @ts-ignore TS doesn't have support for custom events yet
+      const { whyDoIHaveToDoThis } = e.detail
+      this._selectedCat = whyDoIHaveToDoThis
+      this.refresh()
+    })
+
+    this._container.addEventListener('catChanged', e => {
+      // @ts-ignore TS doesn't have CustomEvent handler support yet
+      const { cat } = e.detail
+      this._selectedCat = cat.value
+      this.saveDefaultCatNameToLocalStorage(cat.innerText)
+      this.refresh()
+    })
+
     this._loadingIcon = this._container.appendChild(c('img'))
     this._display = Display(this._container)
     this._button = this._container.appendChild(c('button'))
@@ -109,31 +126,17 @@ class MainComponent extends HTMLElement {
 
   connectedCallback() {
     if (!this.isConnected) return
-
-    this._container.addEventListener('triggerFetch', e => {
-      // @ts-ignore TS doesn't have support for custom events yet
-      this.refresh(e.detail.whyDoIHaveToDoThis)
-    })
-
     this._selectedCat && this.refresh()
-
-    this._container.addEventListener('catChanged', e => {
-      // @ts-ignore TS doesn't have CustomEvent handler support yet
-      const { cat } = e.detail
-      this._selectedCat = cat.value
-      this.saveDefaultCatNameToLocalStorage(cat.innerText)
-      this.refresh()
-    })
   }
 
-  refresh = async (cat = this._selectedCat) => {
-    if (typeof cat !== 'string') {
+  refresh = async () => {
+    if (typeof this._selectedCat !== 'string') {
       this._display.message = 'Something went wrong on our end! Try refreshing.'
       this.hideLoading()
       return
     }
     this.showLoading()
-    const res = await this.getWrForCat(cat)
+    const res = await this.getWrForCat(this._selectedCat)
 
     if (!res.ok) {
       if (res.status === 420) {

@@ -102,7 +102,7 @@ const writeCatsToLocalStorage = async (
 
 const triggerFetch = async (el: CatSelector, cats: Promise<CatEntries>) => {
   el.dispatchEvent(
-    e('triggerFetch', {
+    e('initialFetch', {
       whyDoIHaveToDoThis: (await cats)[constants.DEFAULT_CAT_NAME],
     }),
   )
