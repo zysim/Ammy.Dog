@@ -1,9 +1,8 @@
 import constants from '../../constants'
-import { createCustomEvent } from '../../utils'
 import { getDefaultCat } from '../../utils/cats'
 import fetchApi from '../../utils/fetchApi'
 import { compose, curry } from '../../utils/fp'
-import { c } from '../../utils/jQuery'
+import { c, e } from '../../utils/jQuery'
 
 export type CatEntries = {
   [name: string]: string
@@ -103,7 +102,7 @@ const writeCatsToLocalStorage = async (
 
 const triggerFetch = async (el: CatSelector, cats: Promise<CatEntries>) => {
   el.dispatchEvent(
-    createCustomEvent('triggerFetch', {
+    e('triggerFetch', {
       whyDoIHaveToDoThis: (await cats)[constants.DEFAULT_CAT_NAME],
     }),
   )
@@ -122,7 +121,7 @@ class CatSelector extends HTMLElement {
 
     this._select.addEventListener('change', _ => {
       this._select.dispatchEvent(
-        createCustomEvent('catChanged', {
+        e('catChanged', {
           cat: this._select.options.item(this._select.selectedIndex),
         }),
       )

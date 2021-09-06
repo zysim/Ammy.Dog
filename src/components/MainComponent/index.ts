@@ -1,8 +1,7 @@
 import constants from '../../constants'
-import { createCustomEvent } from '../../utils'
 import debounce from '../../utils/debounce'
 import fetchApi from '../../utils/fetchApi'
-import { c } from '../../utils/jQuery'
+import { c, e } from '../../utils/jQuery'
 import CatSelectorContainer from './CatSelectorContainer'
 import Display, { IDisplay } from './Display'
 
@@ -181,15 +180,13 @@ class MainComponent extends HTMLElement {
 
   // TODO: Doesn't work; event seemingly doesn't dispatch.
   hideLoadingImage = () => {
-    this._container.dispatchEvent(
-      createCustomEvent('isLoading', { isLoading: false }),
-    )
+    this._container.dispatchEvent(e('isLoading', { isLoading: false }))
   }
 
   // TODO: Ditto.
   showLoadingImage = () => {
     this._container.dispatchEvent(
-      createCustomEvent('isLoading', {
+      e('isLoading', {
         isLoading: true,
       }),
     )
